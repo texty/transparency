@@ -1,0 +1,411 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" href="css/styles.css">-->
+</head>
+<style>
+
+    body{
+        margin:0;
+        padding:0;
+    }
+
+    #mygrid {
+        display:grid;
+        grid-template-columns:60% 40%;
+    }
+
+    svg {
+        grid-column: 1/2;
+        display: block;
+        margin: 0;
+        /*border: 1px solid gray;*/
+    }
+
+
+    text{
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 300;
+    }
+
+    text.big-text{
+        font-size: 30px;
+        font-weight: 400;
+    }
+
+    .effect-layer text, text.dummy-text{
+        font-size: 12px;
+    }
+
+    path#ukraine {
+        fill: #f5f5f5;
+        stroke: 3px solid #2a2a2a;
+    }
+
+    .point {
+        cursor:pointer;
+    }
+    .bar{
+        cursor:pointer;
+    }
+
+    .y.axis {
+        color: grey;
+        font-size: 11px;
+    }
+
+
+</style>
+<body>
+
+<!--<div class="graphic">-->
+    <!--<svg class="chart"></svg>-->
+<!--</div>-->
+<div id="mygrid">
+    <svg></svg>
+    <div id="bars">
+    </div>
+</div>
+
+
+
+
+<script src="lib/jquery-2.1.4.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+
+<!--<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
+<!--<script src="js/update.js"></script>-->
+<script>
+    var my_data;
+
+    function retrieve_my_data(cb) {
+        if (my_data) return cb(my_data);
+
+        return d3.csv("data/geocoded.csv", function (err, data) {
+            if (err) throw err;
+
+            data.forEach(function (d) {
+                d.value = +d.value;
+                d.share = +d.share;
+                d.maxV = +d.maxV;
+            });
+
+            my_data = data;
+            if (cb) return cb(data);
+            return;
+        })
+    }
+
+
+    var width = window.innerWidth * 0.6,
+            height = window.innerHeight,
+            centered;
+
+    var color = d3.scale.linear()
+            .domain([1, 20])
+            .clamp(true)
+            .range(['#fff', '#409A99']);
+
+    var projection = d3.geo.mercator()
+            .scale(1800)
+            .center([30, 47])
+            .translate([width / 2, height / 2]);
+
+
+
+    var path = d3.geo.path()
+            .projection(projection);
+
+    var zoom = d3.behavior.zoom()
+            .translate([0, 0])
+            .scale(1)
+            .scaleExtent([1, 8])
+            .on("zoom", zoomed);
+
+    var svg = d3.select('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .call(zoom)
+            ;
+
+    var g = svg.append('g')
+            ;
+
+
+
+
+    var effectLayer = g.append('g')
+            .classed('effect-layer', true);
+
+    var mapLayer = g.append('g')
+            .classed('map-layer', true);
+
+
+
+
+    // Load map data
+
+    retrieve_my_data(function(data){
+
+            var subset = data.filter(function (d) {
+                return d.usage === "Загальний.бал"
+            });
+
+            queue()
+                    .defer(d3.json, 'data/ukr_regions.geojson')
+                    .defer(d3.csv, 'data/geocoded.csv')
+                    .await(makeMyMap);
+
+
+            function makeMyMap(error, ukr_regions) {
+
+                effectLayer.selectAll("path")
+                        .data(ukr_regions.features)
+                        .enter()
+                        .append("path")
+                        .attr("d", path)
+                        .attr("id", "ukraine")
+                        .attr("fill", "grey");
+
+
+
+
+
+
+            }
+
+        mapLayer.selectAll("circle")
+                    .data(subset).enter()
+                    .append("circle")
+                    .attr("class", "point")
+                    .attr("cx", function (d) {
+                        return projection([d.lon, d.lat])[0];
+                    })
+                    .attr("cy", function (d) {
+                        return projection([d.lon, d.lat])[1];
+                    })
+                    .attr("r", "2px")
+                    .attr("fill", "#3695d8")
+                    .on("click", function(d){
+
+//                        var filter  = d.city;
+                        var filter = d.city;
+                        drawBarsSide(filter);
+                    });
+
+
+        function drawBarsOnMap(filter) {
+            $(".chart").remove();
+
+
+            var currentData = data.filter(function(k) {
+                return k.usage === filter
+            });
+
+            currentData = currentData.sort(function (a,b){
+                return d3.descending(+b.value, +a.value)
+            });
+
+            var margin = {
+                top: 50,
+                right: 50,
+                bottom: 15,
+                left: 300
+            };
+
+            var bwidth = (window.innerWidth * 0.4) - margin.left - margin.right,
+                    bheight = window.innerHeight / 2 - margin.top - margin.bottom;
+
+            var bsvg = d3.select("#bars").append("svg")
+                    .attr("width", bwidth + margin.left + margin.right)
+                    .attr("height", bheight + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scale.linear()
+                    .range([0, bwidth])
+                    .domain([0, 100]);
+
+            var y = d3.scale.ordinal()
+                    .rangeRoundBands([bheight, 0], .1)
+                    .domain(currentData.map(function (d) {
+                        return d.usage;
+                    }));
+
+            //make y axis to show bar names
+            var yAxis = d3.svg.axis()
+                    .scale(y)
+                    //no tick marks
+                    .tickSize(0)
+                    .orient("left");
+
+//            var gy = bsvg.append("g")
+//                    .attr("class", "y axis")
+//                    .call(yAxis);
+
+            var bars = g.selectAll(".bar")
+                    .data(currentData)
+                    .enter()
+                    .append("g")
+                    .attr("class", "chart");
+
+
+            bars.append("rect")
+                    .attr("class", "bar-overlaying")
+                    .attr("transform",function(d) { return "translate("+projection([d.lon,d.lat])+")" })
+
+            //                    .attr("y", function (d) {
+//                        return y(d.usage);
+//                    })
+//                    .attr("height", y.rangeBand())
+                    .attr("height", 5)
+//                    .attr("x", 0)
+                    .attr("width", function (d) {
+                        return x(10);
+                    })
+                    .style("fill", "white")
+                    .style("stroke", "#484848")
+           ;
+
+
+
+        //append rects
+            bars.append("rect")
+                    .attr("class", "bar")
+                    .attr("transform",function(d) { return "translate("+projection([d.lon,d.lat])+")" })
+//                    .attr("y", function (d) {
+//                        return y(d.usage);
+//                    })
+//                    .attr("height", y.rangeBand())
+                    .attr("height", 5)
+
+                    // .attr("x", 0)
+                    .attr("width", function (d) {
+                        return x(d.share)/10;
+                    })
+                    .attr("fill", "#3695d8")
+
+        }
+
+
+
+        function drawBarsSide(filter) {
+            $("#bars > svg").remove();
+
+            var currentData = data.filter(function(k) {
+                return k.city === filter && k.usage != "Загальний.бал"
+            });
+
+            currentData = currentData.sort(function (a,b){
+                return d3.descending(+b.value, +a.value)
+            });
+
+            var margin = {
+                top: 50,
+                right: 50,
+                bottom: 15,
+                left: 300
+            };
+
+            var bwidth = (window.innerWidth * 0.4) - margin.left - margin.right,
+                    bheight = window.innerHeight / 2 - margin.top - margin.bottom;
+
+            var bsvg = d3.select("#bars").append("svg")
+                    .attr("width", bwidth + margin.left + margin.right)
+                    .attr("height", bheight + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scale.linear()
+                    .range([0, bwidth])
+                    .domain([0, 100]);
+
+            var y = d3.scale.ordinal()
+                    .rangeRoundBands([bheight, 0], .1)
+                    .domain(currentData.map(function (d) {
+                        return d.usage;
+                    }));
+
+            //make y axis to show bar names
+            var yAxis = d3.svg.axis()
+                    .scale(y)
+                    //no tick marks
+                    .tickSize(0)
+                    .orient("left");
+
+            var gy = bsvg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis);
+
+            var bars = bsvg.selectAll(".bar")
+                    .data(currentData)
+                    .enter()
+                    .append("g");
+
+
+            bars.append("rect")
+                    .attr("class", "bar-overlaying")
+//                    .attr("transform",function(d) { return "translate("+projection([d.lon,d.lat])+")" })
+
+                    .attr("y", function (d) { return y(d.usage); })
+                    .attr("x", 0)
+                    .attr("height", y.rangeBand())
+//                   .attr("height", 10)
+                    .attr("width", function (d) {
+                        return x(20);
+                    })
+                    .style("fill", "#EBEBEB")
+                    .style("stroke", "#none")
+                    .on("click", function(p) {
+                        console.log(p.usage);
+                        var filter = p.usage;
+                        drawBarsOnMap(filter)
+
+                    });
+
+
+
+            //append rects
+            bars.append("rect")
+                    .attr("class", "bar")
+//                    .attr("transform",function(d) { return "translate("+projection([d.lon,d.lat])+")" })
+                    .attr("y", function (d) { return y(d.usage); })
+                    .attr("x", 0)
+                    .attr("height", y.rangeBand())
+//                    .attr("height", 10)
+
+                    .attr("width", function (d) {
+                        return x(d.share)/5;
+                    })
+                    .attr("fill", "#3695d8")
+                    .on("click", function(p) {
+                        console.log(p.usage);
+                        var filter = p.usage;
+                        drawBarsOnMap(filter)
+
+                    });
+        }
+
+
+
+
+        });
+
+
+    function zoomed() {
+        g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        g.select("#ukraine").style("stroke-width", 1.5 / d3.event.scale + "px");
+        g.select(".bar").style("stroke-width", 1.5 / d3.event.scale + "px");
+//        drawBarsOnMap(filter);
+    }
+
+
+</script>
+
+</body>
+</html>
