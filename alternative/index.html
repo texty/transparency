@@ -4,16 +4,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--<link rel="stylesheet" href="css/styles.css">-->
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
+
 </head>
 <style>
 
     @font-face {
-        font-family: 'Minion Pro Regular';
-        src: url("../fonts/MinionPro-Regular.otf"); }
+        font-family: 'Syntax-Roman';
+        src: url("../fonts/SyntaxLTStd-Roman.otf");
+    }
+    @font-face {
+        font-family: 'Syntax-Bold';
+        src: url("../fonts/SyntaxLTStd-Bold.otf");
+    }
 
     body{
         margin:0;
         padding:0;
+        /*color:#9f9f9f;*/
     }
 
     #mygrid {
@@ -25,13 +33,15 @@
         grid-column: 1/2;
         display: block;
         margin: 0;
-        font-family: 'Minion Pro Regular', serif;
+        font-family: 'PT Sans', sans-serif;
         /*border: 1px solid gray;*/
     }
 
 
-    text{
-        font-weight: 300;
+    text {
+        color:grey;
+        fill:grey;
+
     }
 
     text.big-text{
@@ -43,10 +53,7 @@
         font-size: 12px;
     }
 
-    path#ukraine {
-        fill: #f5f5f5;
-        stroke: 3px solid #2a2a2a;
-    }
+
 
     .point {
         cursor:pointer;
@@ -56,14 +63,41 @@
     }
 
     .y.axis {
-        color: grey;
+        color:grey;
         font-size: 11px;
-        font-family: 'Minion Pro Regular', serif;
+        font-family: 'PT Sans', sans-serif;
+        font-weight:400;
+        text-transform: uppercase;
     }
 
     .label {
-        font-size:6px;
+        color:grey;
+        font-family: 'PT Sans', sans-serif;
+        font-size:10px;
         text-transform: uppercase;
+    }
+
+    #theCity {
+        margin-top: 50px;
+        margin-right: 200px;
+        text-align: right;
+        font-family: 'PT Sans', sans-serif;
+        font-size:20px;
+        color:grey;
+        text-transform: uppercase;
+    }
+
+    div.tooltip {
+        position: absolute;
+        text-align: left;
+        width: 60px;
+        height: auto;
+        padding: 2px;
+        font-family: 'PT Sans', sans-serif;
+        font-size:12px;
+        color:grey;
+        text-transform: uppercase;
+        pointer-events: none;
     }
 
 
@@ -76,6 +110,7 @@
 <div id="mygrid">
     <svg></svg>
     <div id="bars">
+        <p id="theCity"></p>
     </div>
 </div>
 
@@ -91,14 +126,16 @@
 <!--<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
 <!--<script src="js/update.js"></script>-->
 <script>
-
+    var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
 
     var my_data;
 
     function retrieve_my_data(cb) {
         if (my_data) return cb(my_data);
 
-        return d3.csv("data/geocoded.csv", function (err, data) {
+        return d3.csv("data/geocoded2.csv", function (err, data) {
             if (err) throw err;
 
             data.forEach(function (d) {
@@ -126,8 +163,8 @@
             .range(['#fff', '#409A99']);
 
     var projection = d3.geo.mercator()
-            .scale(1800)
-            .center([30, 47])
+            .scale(2300)
+            .center([31, 48])
             .translate([width / 2, height / 2]);
 
 
@@ -171,20 +208,20 @@
             });
 
             queue()
-                    .defer(d3.json, 'data/ukr_shape.geojson')
-                    .defer(d3.json, 'data/ukr_regions.geojson')
-                    .defer(d3.csv, 'data/geocoded.csv')
+                    .defer(d3.json, 'data/simplifyed_ukr.geojson')
+//                    .defer(d3.json, 'data/simplifyed_regions.geojson')
+                    .defer(d3.csv, 'data/geocoded2.csv')
                     .await(makeMyMap);
 
         var margin = {
-            top: 50,
+            top: 10,
             right: 50,
             bottom: 15,
             left: 300
         };
 
-        var bwidth = (window.innerWidth * 0.4) - margin.left - margin.right,
-                bheight = window.innerHeight / 2 - margin.top - margin.bottom;
+        var bwidth = 400 - margin.left - margin.right,
+                bheight = window.innerHeight / 1.5 - margin.top - margin.bottom;
 
         var x = d3.scale.linear()
                 .range([0, bwidth])
@@ -204,7 +241,7 @@
                 .orient("left");
 
 
-            function makeMyMap(error, ukr_shape, ukr_regions) {
+            function makeMyMap(error, ukr_shape) {
 
                 effectLayer.selectAll("path")
                         .data(ukr_shape.features)
@@ -212,19 +249,19 @@
                         .append("path")
                         .attr("d", path)
                         .attr("id", "ukraine")
-                        .attr("fill", "#f5f5f5")
+                        .attr("fill", "white")
                         .attr("stroke", "#3695d8")
                         .attr("stroke-width", "2px");
 
-                effectLayer.selectAll("path")
-                        .data(ukr_regions.features)
-                        .enter()
-                        .append("path")
-                        .attr("d", path)
-                        .attr("fill", "#f5f5f5")
-                        .attr("id", "regions")
-                        .attr("stroke", "#3695d8")
-                        .attr("stroke-width", "0.5px");
+//                effectLayer.selectAll("path")
+//                        .data(ukr_regions.features)
+//                        .enter()
+//                        .append("path")
+//                        .attr("d", path)
+//                        .attr("fill", "white")
+//                        .attr("id", "regions")
+//                        .attr("stroke", "#3695d8")
+//                        .attr("stroke-width", "0.5px");
             }
 
 //        mapLayer.selectAll("circle")
@@ -252,15 +289,28 @@
                 .attr("transform",function(d) {
                     return "translate("+projection([d.lon,d.lat])+")"
                 })
-                .attr("height", 5)
+                .attr("height", 7)
                 .attr("width", function (d) {
-                    return 10;
+                    return 20;
                 })
                 .style("fill", "white")
-                .style("stroke", "#484848")
+                .style("stroke", "#bdbdbd")
                 .on("click", function(d){
                     var filter = d.city;
                     drawBarsSide(filter);
+                })
+                .on("mouseover", function(d) {
+                    div.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                    div.html(d.city)
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 10) + "px");
+                })
+                .on("mouseout", function(d) {
+                    div.transition()
+                            .duration(500)
+                            .style("opacity", 0);
                 });
 
 
@@ -270,11 +320,11 @@
                 .append("g")
                 .append("rect")
                 .attr("transform",function(d) {
-                    return "translate("+projection([d.lon,d.lat])+")"
+                    return "translate("+projection([d.lon,d.lat]) + 5 +")"
                 })
-                .attr("height", 5)
+                .attr("height", 7)
                 .attr("width", function (d) {
-                    return d.share / 10;
+                    return d.share / 5;
                 })
                 .attr("fill", "#3695d8")
                 .on("click", function(d){
@@ -283,18 +333,23 @@
                 });
 
 
-        mapLayer.selectAll("text")
-                .data(subset).enter()
-                .append("text")
-                .attr("class", "label")
-                .attr("x", function (d) {
-                    return projection([d.lon, d.lat])[0] + 5;
-                })
-                .attr("y", function (d) {
-                    return projection([d.lon, d.lat])[1]  + 10;
-                })
-                .text(function (d) { return d.city })
-                .attr("fill", "grey");
+//        mapLayer.selectAll("text")
+//                .data(subset).enter()
+//                .append("text")
+//                .attr("class", "label")
+//                .attr("x", function (d) {
+//                    return projection([d.lon, d.lat])[0] ;
+//                })
+//                .attr("y", function (d) {
+//                    return projection([d.lon, d.lat])[1]  + 16 +"px";
+//                })
+//                .text(function (d) {
+//                    if(d.district === "yes") {
+//                        return d.city
+//                    }
+//
+//                     })
+//                .attr("fill", "grey");
 
 
 
@@ -306,11 +361,7 @@
                 return k.usage === filter
             });
 
-            currentData = currentData.sort(function (a,b){
-                return d3.descending(+b.value, +a.value)
-            });
-
-            var margin = {
+            currentData = currentData.sort(function (a,b){ var margin = {
                 top: 50,
                 right: 50,
                 bottom: 15,
@@ -319,6 +370,9 @@
 
             var bwidth = (window.innerWidth * 0.4) - margin.left - margin.right,
                     bheight = window.innerHeight / 2 - margin.top - margin.bottom;
+                return d3.descending(+b.value, +a.value)
+            });
+
 
             var bsvg = d3.select("#bars").append("svg")
                     .attr("width", bwidth + margin.left + margin.right)
@@ -334,7 +388,8 @@
                     .rangeRoundBands([bheight, 0], .1)
                     .domain(currentData.map(function (d) {
                         return d.usage;
-                    }));
+                    }))
+                    ;
 
             //make y axis to show bar names
             var yAxis = d3.svg.axis()
@@ -363,16 +418,29 @@
 //                        return y(d.usage);
 //                    })
 //                    .attr("height", y.rangeBand())
-                    .attr("height", 5)
+                    .attr("height", 7)
 //                    .attr("x", 0)
                     .attr("width", function (d) {
-                        return 10;
+                        return 20;
                     })
                     .style("fill", "white")
-                    .style("stroke", "#484848")
+                    .style("stroke", "#bdbdbd")
                     .on("click", function(d){
                         var filter = d.city;
                         drawBarsSide(filter);
+                    })
+                    .on("mouseover", function(d) {
+                        div.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                        div.html(d.city)
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 10) + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        div.transition()
+                                .duration(500)
+                                .style("opacity", 0);
                     });
 
 
@@ -386,16 +454,29 @@
 //                        return y(d.usage);
 //                    })
 //                    .attr("height", y.rangeBand())
-                    .attr("height", 5)
+                    .attr("height", 7)
 
                     // .attr("x", 0)
                     .attr("width", function (d) {
-                        return d.share/10;
+                        return d.share/5;
                     })
                     .attr("fill", "#3695d8")
                     .on("click", function(d){
                         var filter = d.city;
                         drawBarsSide(filter);
+                    })
+                    .on("mouseover", function(d) {
+                        div.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                        div.html(d.city)
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 10) + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        div.transition()
+                                .duration(500)
+                                .style("opacity", 0);
                     });
 
         }
@@ -404,7 +485,7 @@
 
         function drawBarsSide(filter) {
             $("#bars > svg").remove();
-
+            $("#theCity").html(filter);
             var currentData = data.filter(function(k) {
                 return k.city === filter && k.usage != "Загальний.бал"
             });
@@ -413,15 +494,7 @@
                 return d3.descending(+b.value, +a.value)
             });
 
-            var margin = {
-                top: 50,
-                right: 50,
-                bottom: 15,
-                left: 300
-            };
 
-            var bwidth = (window.innerWidth * 0.4) - margin.left - margin.right,
-                    bheight = window.innerHeight / 2 - margin.top - margin.bottom;
 
             var bsvg = d3.select("#bars").append("svg")
                     .attr("width", bwidth + margin.left + margin.right)
@@ -465,7 +538,7 @@
                     .attr("height", y.rangeBand())
 //                   .attr("height", 10)
                     .attr("width", function (d) {
-                        return x(20);
+                        return x(100);
                     })
                     .style("fill", "#EBEBEB")
                     .style("stroke", "#none")
@@ -488,7 +561,7 @@
 //                    .attr("height", 10)
 
                     .attr("width", function (d) {
-                        return x(d.share)/5;
+                        return x(d.share);
                     })
                     .attr("fill", "#3695d8")
                     .on("click", function(p) {
