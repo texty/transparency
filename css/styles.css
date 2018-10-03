@@ -8,18 +8,27 @@ body {
   margin: 0;
   padding: 0; }
 
+h1 {
+  text-align: center;
+  padding-top: 10px;
+  padding-left: 30px;
+  font-family: 'PT Sans Caption', sans-serif;
+  color: #6e6e6e;
+  font-size: 30px;
+  text-transform: uppercase; }
+
 #mygrid {
   max-width: 100vw;
   height: 100vh;
   display: grid;
   grid-template-columns: 70% 30%;
-  grid-template-rows: 10% 90%; }
+  grid-template-rows: 17% 83%; }
 
 #selectedIndicator, #selectedCity {
   padding: 10px; }
 
 #selectedCity, #selectedIndicator {
-  font-family: 'PT Sans', sans-serif;
+  font-family: 'PT Sans Caption', sans-serif;
   color: grey;
   font-size: 16px;
   font-weight: bold;
@@ -47,6 +56,14 @@ svg {
   height: 100%;
   overflow-y: auto; }
 
+th {
+  font-family: 'PT Sans Caption', sans-serif;
+  text-align: left;
+  color: grey;
+  font-size: 14px;
+  padding-bottom: 10px;
+  font-weight: bold; }
+
 #bars {
   background-color: #d4ebfb;
   grid-column: 2/3;
@@ -61,8 +78,13 @@ svg {
 #sideTable {
   width: 100%; }
 
-td {
-  padding-bottom: 5px;
+#sideTable > tbody > tr > td {
+  padding-bottom: 2px;
+  padding-top: 2px;
+  text-transform: uppercase; }
+
+td.citiesColumn {
+  padding-bottom: 2px;
   pointer-events: all; }
 
 text {
@@ -97,11 +119,10 @@ text.big-text {
 
 .citiesColumn, .indicatorsArray {
   font-family: 'PT Sans Caption', sans-serif;
-  color: grey;
-  text-transform: uppercase; }
+  color: grey; }
 
 .citiesColumn {
-  font-size: 10px; }
+  font-size: 11px; }
 
 .indicatorsArray {
   font-size: 12px;
@@ -139,7 +160,7 @@ div.tooltip {
   left: 0; }
 
 .boldCity {
-  color: red !important;
+  color: #3695d8 !important;
   font-weight: bold !important; }
 
 /*# sourceMappingURL=styles.css.map */

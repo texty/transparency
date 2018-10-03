@@ -1,7 +1,7 @@
 /**
  * Created by yevheniia on 03.10.18.
  */
-
+var selectedElColor = "#3695d8";
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -30,7 +30,7 @@ function retrieve_my_data(cb) {
 }
 
 
-var width = window.innerWidth * 0.6,
+var width = window.innerWidth * 0.7,
     height = window.innerHeight * 0.7,
     centered;
 
@@ -41,7 +41,7 @@ var color = d3.scale.linear()
 
 var projection = d3.geo.mercator()
     .scale(2300)
-    .center([31, 48.5])
+    .center([31.5, 48.5])
     .translate([width / 2, height / 2]);
 
 
@@ -126,7 +126,7 @@ retrieve_my_data(function(data){
             .attr("d", path)
             .attr("id", "ukraine")
             .attr("fill", "white")
-            .attr("stroke", "#61ace0")
+            .attr("stroke", "yellow")
             .attr("stroke-width", "2px");
 
 //                effectLayer.selectAll("path")
@@ -201,13 +201,13 @@ retrieve_my_data(function(data){
     var thead = table.append('thead');
     var tbody = table.append('tbody');
 
-    // thead.append('tr').selectAll('th')
-    //     .data(["Місто", "Індикатор"]).enter()
-    //     .append('th')
-    //     .style("top", "10px")
-    //     .text(function (d) {
-    //         return d;
-    //     });
+    thead.append('tr').selectAll('th')
+        .data(["Індикатор", "Оцінка"]).enter()
+        .append('th')
+        .style("top", "10px")
+        .text(function (d) {
+            return d;
+        });
 
     // create a row for each object in the data
     var rowsWithIndicators = tbody.selectAll('tr')
@@ -222,12 +222,10 @@ retrieve_my_data(function(data){
         .text(function (d) {
             return d.usage
         })
-        .style("font-weight", function(d) {
-            return d.usage === 'Загальний бал'?'bold':'regular'
-        })
+
         .on("click", function(p) {
             d3.selectAll('.indicatorsArray').style("color", "grey");
-            d3.select(this).style("color", "red");
+            d3.select(this).style("color", selectedElColor);
             var filter = p.usage;
             drawTable(filter)
 
@@ -257,13 +255,13 @@ retrieve_my_data(function(data){
         var tbody = table.append('tbody');
 
 
-        // thead.append('tr').selectAll('th')
-        //     .data(["Місто", "Індикатор"]).enter()
-        //     .append('th')
-        //     .style("top", "10px")
-        //     .text(function (d) {
-        //         return d;
-        //     });
+        thead.append('tr').selectAll('th')
+            .data(["Індикатор", "Оцінка"]).enter()
+            .append('th')
+            .style("top", "10px")
+            .text(function (d) {
+                return d;
+            });
 
         // create a row for each object in the data
         var rows = tbody.selectAll('tr')
@@ -277,12 +275,10 @@ retrieve_my_data(function(data){
             .text(function (d) {
                 return d.usage
             })
-            .style("font-weight", function(d) {
-                return d.usage === 'Загальний бал'?'bold':'regular'
-            })
+
             .on("click", function(p) {
-                d3.selectAll('.indicatorsArray').style("color", "grey");
-                d3.select(this).style("color", "red");
+                $('.indicatorsArray').parent().css("background-color", "transparent");
+                $(this).parent().css("background-color", "yellow");
                 console.log(p.usage);
                 var filter = p.usage;
                 drawTable(filter)
@@ -297,11 +293,13 @@ retrieve_my_data(function(data){
             .call(drawBars("white"))
             .on("click", function(p) {
                 var filter = p.usage;
-                drawTable(filter)
+                drawTable(filter);
+                d3.selectAll('.indicatorsArray').style("color", "grey");
+                d3.selectAll('.indicatorsArray').style("font-weight", "normal");
+                $('.indicatorsArray').parent().css("background-color", "transparent");
+                $(this).parent().css("background-color", "yellow");
+                
             });
-
-
-
 
         rows.append('td')
             .attr("class", "citiesColumn")
@@ -336,9 +334,9 @@ retrieve_my_data(function(data){
         });
 
         // thead.append('tr').selectAll('th')
-        //     .data(["Місто", "Індикатор"]).enter()
+        //     .data(["Місто", "Оцінка"]).enter()
         //     .append('th')
-        //     .style("top", "10px")
+        //     .style("text-align", "left")
         //     .text(function (d) {
         //         return d;
         //     });
@@ -351,14 +349,16 @@ retrieve_my_data(function(data){
             .attr('class', 'oneRow');
 
         rows.append('td')
-            .attr("class", function(d) {
+            .style("background-color", function(d) {
                 if(d.city === targetCity) {
-                    return "citiesColumn boldCity"
+                    $(this).parent().css('background-color', "yellow");
+                    return "yellow"
                 }
                 else {
-                    return "citiesColumn"
+                    return false
                 }
             })
+            .attr("class","citiesColumn")
             .style("height", 10)
             .text(function (d) {
                 return d.city
@@ -366,6 +366,14 @@ retrieve_my_data(function(data){
 
 
         rows.append('td')
+            .style("background-color", function(d) {
+                if(d.city === targetCity) {
+                    return "yellow"
+                }
+                else {
+                    return false
+                }
+            })
             .datum(function (d) {
                 return d
             })

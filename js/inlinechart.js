@@ -38,13 +38,15 @@ var drawBars = function (color) {
                 .attr('class', 'overlay')
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr("fill", "#3695d8")
+                .attr("fill", selectedElColor)
+                // .attr("fill", "#3695d8")
                 .attr("width", "0%")
                 .transition()
                 .duration(500)
                 .attr('width', function() { return data.share + "%"})
                 .attr('height', 10)
-                .style('fill', "#3695d8")
+                .attr("fill", selectedElColor)
+                // .style('fill', "#3695d8")
                 .style("pointer-event", "none");
 
         });
