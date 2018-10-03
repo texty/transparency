@@ -1,6 +1,8 @@
 /**
  * Created by yevheniia on 03.10.18.
  */
+
+
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
@@ -10,7 +12,7 @@ var my_data;
 function retrieve_my_data(cb) {
     if (my_data) return cb(my_data);
 
-    return d3.csv("data/geocoded2.csv", function (err, data) {
+    return d3.csv("data/geocoded.csv", function (err, data) {
         if (err) throw err;
 
         data.forEach(function (d) {
@@ -29,7 +31,7 @@ function retrieve_my_data(cb) {
 
 
 var width = window.innerWidth * 0.6,
-    height = window.innerHeight,
+    height = window.innerHeight * 0.7,
     centered;
 
 var color = d3.scale.linear()
@@ -39,7 +41,7 @@ var color = d3.scale.linear()
 
 var projection = d3.geo.mercator()
     .scale(2300)
-    .center([31, 47.2])
+    .center([31, 48.5])
     .translate([width / 2, height / 2]);
 
 
@@ -79,13 +81,12 @@ var mapLayer = g.append('g')
 retrieve_my_data(function(data){
 
     var subset = data.filter(function (d) {
-        return d.usage === "Загальний.бал"
+        return d.usage === "Загальний бал"
     });
 
     queue()
         .defer(d3.json, 'data/simplifyed_ukr.geojson')
-        //                    .defer(d3.json, 'data/simplifyed_regions.geojson')
-        .defer(d3.csv, 'data/geocoded2.csv')
+        .defer(d3.csv, 'data/geocoded.csv')
         .await(makeMyMap);
 
     var margin = {
@@ -189,6 +190,10 @@ retrieve_my_data(function(data){
         return k.city === "Київ"
     });
 
+    sideBarsData = sideBarsData.sort(function (a,b){
+        return d3.descending(+a.value, +b.value)
+    });
+
     var table = d3.select('#cityIndicators')
         .append('table')
         .attr("id", "sideTable");
@@ -218,6 +223,8 @@ retrieve_my_data(function(data){
             return d.usage
         })
         .on("click", function(p) {
+            d3.selectAll('.indicatorsArray').style("color", "grey");
+            d3.select(this).style("color", "red");
             var filter = p.usage;
             drawTable(filter)
 
@@ -239,6 +246,8 @@ retrieve_my_data(function(data){
         currentData = currentData.sort(function (a,b){
             return d3.descending(+a.value, +b.value)
         });
+
+        $('#selectedCity').html(filter);
 
         var table = d3.select('#cityIndicators').append('table').attr("id", "sideTable");
         var thead = table.append('thead');
@@ -266,6 +275,8 @@ retrieve_my_data(function(data){
                 return d.usage
             })
             .on("click", function(p) {
+                d3.selectAll('.indicatorsArray').style("color", "grey");
+                d3.select(this).style("color", "red");
                 console.log(p.usage);
                 var filter = p.usage;
                 drawTable(filter)
@@ -304,7 +315,12 @@ retrieve_my_data(function(data){
             })
             .style("background-color", "#3695d8");
 
-
+        rows.append('td')
+            .attr("class", "citiesColumn")
+            .style("height", 10)
+            .text(function (d) {
+                return d.value
+            });
 
 
         
@@ -315,6 +331,10 @@ retrieve_my_data(function(data){
         d3.select('svg#map').style("display", "none");
         d3.selectAll('.tableForRemove').remove();
         d3.select('#tableContainer').style("display", "grid");
+
+        $('#selectedIndicator').html(filter);
+        
+        var targetCity = $('#selectedCity').html();
 
         var table = d3.select('#table1').append('table').attr("class", "tableForRemove");
         var thead = table.append('thead');
@@ -344,7 +364,14 @@ retrieve_my_data(function(data){
             .attr('class', 'oneRow');
 
         rows.append('td')
-            .attr("class", "citiesColumn")
+            .attr("class", function(d) {
+                if(d.city === targetCity) {
+                    return "citiesColumn boldCity"
+                }
+                else {
+                    return "citiesColumn"
+                }
+            })
             .style("height", 10)
             .text(function (d) {
                 return d.city
@@ -409,6 +436,7 @@ $('#toMap').on("click", function() {
     $('svg#map').css("display", "block");
     $('.tableForRemove').remove();
     $('#tableContainer').css("display", "none");
+    $('#selectedIndicator').html('Оберіть місто');
 
 });
 
