@@ -3,35 +3,44 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" href="css/styles.css">-->
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<style>
-
-
-
-
-</style>
 <body>
 
-<div class="graphic">
-    <svg class="chart"></svg>
+
+
+<div id="mygrid">
+    <svg id="map"></svg>
+    <div id="tableContainer">
+        <img src="img/left-arrow.png" style="width:30px;  padding:30px 10px 0 30px; cursor:pointer;" id="toMap" title="До карти">
+        <div class="table " id="table1">
+        </div>
+        <div class="table " id="table2">
+        </div>
+        <div class="table " id="table3">
+        </div>
+
+    </div>
+
+    <div id="bars">
+        <div id="cityIndicators"></div>
+    </div>
 </div>
 
 
 
 
-
 <script src="lib/jquery-2.1.4.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<!--<script src="https://d3js.org/d3.v3.min.js"></script>-->
-<script src="http://d3js.org/queue.v1.min.js"></script>
-
+<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="//d3js.org/queue.v1.min.js"></script>
 <!--<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
-<script src="js/update.js"></script>
-<script>
+<!--<script src="js/update.js"></script>-->
+<script src="js/inlinechart.js"></script>
 
-</script>
-
+<script src="js/script.js"></script>
 </body>
 </html>
