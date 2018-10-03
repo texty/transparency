@@ -79,8 +79,8 @@ th {
   width: 100%; }
 
 #sideTable > tbody > tr > td {
-  padding-bottom: 2px;
-  padding-top: 2px;
+  padding-bottom: 4px;
+  padding-top: 4px;
   text-transform: uppercase; }
 
 td.citiesColumn {

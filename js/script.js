@@ -202,7 +202,7 @@ retrieve_my_data(function(data){
     var tbody = table.append('tbody');
 
     thead.append('tr').selectAll('th')
-        .data(["Індикатор", "Оцінка"]).enter()
+        .data(["Індикатори:", ""]).enter()
         .append('th')
         .style("top", "10px")
         .text(function (d) {
@@ -224,8 +224,8 @@ retrieve_my_data(function(data){
         })
 
         .on("click", function(p) {
-            d3.selectAll('.indicatorsArray').style("color", "grey");
-            d3.select(this).style("color", selectedElColor);
+            $('.indicatorsArray').parent().css("background-color", "transparent");
+            $(this).parent().css("background-color", "yellow");
             var filter = p.usage;
             drawTable(filter)
 
@@ -248,7 +248,7 @@ retrieve_my_data(function(data){
             return d3.descending(+a.value, +b.value)
         });
 
-        $('#selectedCity').html(filter);
+        $('#selectedCity').html('<span id="cityFilter">' + filter + "</span><span style='text-transform:lowercase; font-weight: 100'> (клікайте на індикатори <br> нижче, щоб порівняти міста)</span>");
 
         var table = d3.select('#cityIndicators').append('table').attr("id", "sideTable");
         var thead = table.append('thead');
@@ -319,7 +319,7 @@ retrieve_my_data(function(data){
         d3.select('#tableContainer').style("display", "grid");
 
         $('#selectedIndicator').html(filter);
-        var targetCity = $('#selectedCity').html();
+        var targetCity = $('#cityFilter').html();
 
         var table = d3.select('#table1').append('table').attr("class", "tableForRemove");
         var thead = table.append('thead');
