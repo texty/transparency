@@ -62,7 +62,8 @@ svg {
   width: 100%; }
 
 td {
-  padding-bottom: 5px; }
+  padding-bottom: 5px;
+  pointer-events: all; }
 
 text {
   color: grey;
@@ -103,7 +104,6 @@ text.big-text {
   font-size: 10px; }
 
 .indicatorsArray {
-  font-weight: bold;
   font-size: 12px;
   cursor: pointer; }
 

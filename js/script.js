@@ -222,6 +222,9 @@ retrieve_my_data(function(data){
         .text(function (d) {
             return d.usage
         })
+        .style("font-weight", function(d) {
+            return d.usage === 'Загальний бал'?'bold':'regular'
+        })
         .on("click", function(p) {
             d3.selectAll('.indicatorsArray').style("color", "grey");
             d3.select(this).style("color", "red");
@@ -274,6 +277,9 @@ retrieve_my_data(function(data){
             .text(function (d) {
                 return d.usage
             })
+            .style("font-weight", function(d) {
+                return d.usage === 'Загальний бал'?'bold':'regular'
+            })
             .on("click", function(p) {
                 d3.selectAll('.indicatorsArray').style("color", "grey");
                 d3.select(this).style("color", "red");
@@ -284,36 +290,18 @@ retrieve_my_data(function(data){
             });
 
 
-        var chart = rows.append('td')
-            .attr("class", "chart")
-            .attr("width", 60)
-            .style("position", "relative")
+        rows.append('td')
+            .datum(function (d) {
+                return d
+            })
+            .call(drawBars("white"))
             .on("click", function(p) {
                 var filter = p.usage;
                 drawTable(filter)
-
             });
 
 
-        chart.append("div")
-            .style("height", 10)
-            .attr("class", "underlay")
-            .style("background-color", "white")
-        ;
 
-
-
-        chart.append("div")
-            .attr("class", "overlay")
-            .style("background-color", "#3695d8")
-            .style("height", 10)
-            .style("width", "0%")
-            .transition()
-            .duration(500)
-            .style("width", function(d) {
-                return d.share + "%"
-            })
-            .style("background-color", "#3695d8");
 
         rows.append('td')
             .attr("class", "citiesColumn")
@@ -323,7 +311,7 @@ retrieve_my_data(function(data){
             });
 
 
-        
+
     }
 
     //----- малює таблицю міст на місці карти
@@ -333,7 +321,6 @@ retrieve_my_data(function(data){
         d3.select('#tableContainer').style("display", "grid");
 
         $('#selectedIndicator').html(filter);
-        
         var targetCity = $('#selectedCity').html();
 
         var table = d3.select('#table1').append('table').attr("class", "tableForRemove");
@@ -378,29 +365,12 @@ retrieve_my_data(function(data){
             });
 
 
-        var chart = rows.append('td')
-                .attr("class", "chart")
-                .attr("width", 60)
-                .style("position", "relative")
-            ;
-
-        chart.append("div")
-            .style("height", 10)
-            .attr("class", "underlay")
-            .style("background-color", "#EBEBEB");
-
-
-        chart.append("div")
-            .attr("class", "overlay")
-            .style("background-color", "#3695d8")
-            .style("height", 10)
-            .style("width", "0%")
-            .transition()
-            .duration(500)
-            .style("width", function (d) {
-                return d.share + "%"
+        rows.append('td')
+            .datum(function (d) {
+                return d
             })
-            .style("background-color", "#3695d8");
+            .call(drawBars("#EBEBEB"));
+
 
         rows.append('td')
             .attr("class", "citiesColumn")
@@ -408,6 +378,9 @@ retrieve_my_data(function(data){
             .text(function (d) {
                 return d.value
             });
+
+
+
 
 
         var splitBy = 34;
