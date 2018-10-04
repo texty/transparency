@@ -4,8 +4,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--<link rel="stylesheet" href="css/styles.css">-->
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700&amp;subset=cyrillic,cyrillic-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&amp;subset=cyrillic,cyrillic-ext"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700&amp;subset=cyrillic,cyrillic-ext"
+          rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -15,10 +17,21 @@
     <div id="header">
         <h1>Рейтинг прозорості інвестиційного сектору. <br> 100 найбільших міст України</h1>
     </div>
+    <div id="logoContainer">
+        <div id="logo">
+            <img style="width:150px;" src="img/1.png"/>
+            <img style="width:180px;" src="img/2.jpg"/>
+            <img style="width:250px;" src="img/3.jpg"/>
+            <p style="font-size:9px; width:90%; font-family: 'PT Sans Caption', sans-serif;">Ця ініціатива впроваджується в рамках проекту «Прозорість і доброчесність публічного сектору», який виконується  Програмою розвитку ООН в Україні та фінансується Міністерством закордонних справ Данії протягом 2015-2018 рр. Думки, висновки чи рекомендації належать авторам та упорядникам цього видання і не обов’язково відображають погляди Міністерства закордонних справ Данії, Програми розвитку Організації Об’єднаних Націй чи інших агенцій ООН. </p>
+            </div>
+
+
+    </div>
 
     <svg id="map"></svg>
     <div id="tableContainer">
-        <img src="img/left-arrow.png" style="width:20px;  padding:0 10px 0 30px; cursor:pointer;" id="toMap" title="До карти">
+        <img src="img/left-arrow.png" style="width:20px;  padding:0 10px 0 30px; cursor:pointer;" id="toMap"
+             title="До карти">
         <div class="table " id="table1">
         </div>
         <div class="table " id="table2">
@@ -36,12 +49,12 @@
 </div>
 
 
-
-
 <script src="lib/jquery-2.1.4.min.js"></script>
 <!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
+<!--<script src="lib/d3-legend.js"></script>-->
+
 <!--<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
 <!--<script src="js/update.js"></script>-->
 <script src="js/inlinechart.js"></script>

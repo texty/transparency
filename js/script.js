@@ -9,6 +9,7 @@ var div = d3.select("body").append("div")
 
 var my_data;
 
+//завантаження даних в колбек
 function retrieve_my_data(cb) {
     if (my_data) return cb(my_data);
 
@@ -29,10 +30,9 @@ function retrieve_my_data(cb) {
     })
 }
 
-
+//ширина-висота svg
 var width = window.innerWidth * 0.7,
-    height = window.innerHeight * 0.7,
-    centered;
+    height = width / 1.9;
 
 var color = d3.scale.linear()
     .domain([1, 20])
@@ -40,31 +40,19 @@ var color = d3.scale.linear()
     .range(['#fff', '#409A99']);
 
 var projection = d3.geo.mercator()
-    .scale(2300)
-    .center([31.5, 48.5])
+    .scale([width * 2])
+    .center([31.5, 47.6])
     .translate([width / 2, height / 2]);
-
 
 
 var path = d3.geo.path()
     .projection(projection);
 
-//    var zoom = d3.behavior.zoom()
-//            .translate([0, 0])
-//            .scale(1)
-//            .scaleExtent([1, 8])
-//            .on("zoom", zoomed);
-
 var svg = d3.select('svg')
         .attr('width', width)
-        .attr('height', height)
-//            .call(zoom)
-    ;
+        .attr('height', height);
 
-var g = svg.append('g')
-    ;
-
-
+var g = svg.append('g');
 
 
 var effectLayer = g.append('g')
@@ -77,7 +65,6 @@ var mapLayer = g.append('g')
 
 
 // Load map data
-
 retrieve_my_data(function(data){
 
     var subset = data.filter(function (d) {
@@ -85,15 +72,15 @@ retrieve_my_data(function(data){
     });
 
     queue()
-        .defer(d3.json, 'data/simplifyed_ukr.geojson')
+        .defer(d3.json, 'data/simplifyed_ukr005.geojson')
         .defer(d3.csv, 'data/geocoded.csv')
         .await(makeMyMap);
 
     var margin = {
         top: 10,
-        right: 50,
+        right: window.innerWidth * 0.2,
         bottom: 15,
-        left: 300
+        left: window.innerWidth * 0.2
     };
 
     var bwidth = 400 - margin.left - margin.right,
@@ -116,7 +103,7 @@ retrieve_my_data(function(data){
         .tickSize(0)
         .orient("left");
 
-
+    //малюємо мапу
     function makeMyMap(error, ukr_shape) {
 
         effectLayer.selectAll("path")
@@ -127,18 +114,9 @@ retrieve_my_data(function(data){
             .attr("id", "ukraine")
             .attr("fill", "white")
             .attr("stroke", "yellow")
-            .attr("stroke-width", "2px");
-
-//                effectLayer.selectAll("path")
-//                        .data(ukr_regions.features)
-//                        .enter()
-//                        .append("path")
-//                        .attr("d", path)
-//                        .attr("fill", "white")
-//                        .attr("id", "regions")
-//                        .attr("stroke", "#3695d8")
-//                        .attr("stroke-width", "0.5px");
+            .attr("stroke-width", "4px");
     }
+
 
     mapLayer.selectAll("circle")
         .data(subset).enter()
@@ -159,10 +137,45 @@ retrieve_my_data(function(data){
             }
 
         })
-        .attr("fill", "#2684c6")
+        .attr("fill", function(d) {
+            if (d.value >= 15){
+                return "#134162"
+            }
+            else if (d.value < 15 && d.value >=10){
+                return "#2171a9"
+            }
+            else if (d.value < 10 && d.value >=5){
+                return "#3695d8"
+            }
+            else if (d.value < 5){
+                return "#8bc2e9"
+            }
+
+
+        })
         .on("click", function(d){
             var filter = d.city;
             drawBarsSide(filter);
+        })
+        .on("mouseover", function(d){
+            if(d.district === "no"){
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(d.city)
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 18) + "px");
+                // $('.label').css("display", "none")
+            }
+
+
+
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+            // $('.label').css("display", "block")
         });
 
 
@@ -185,6 +198,59 @@ retrieve_my_data(function(data){
         })
         .attr("fill", "grey");
 
+
+
+
+
+    //----------resize-------------------
+    window.addEventListener("resize", function () {
+        var width = window.innerWidth * 0.7,
+            height = width / 1.9;
+
+
+        var margin = {
+            right: window.innerWidth * 0.2,
+            left: window.innerWidth * 0.2
+        };
+
+        var projection = d3.geo.mercator()
+            .scale([width * 2])
+            .center([31.5, 48.5])
+            .translate([width / 2, height / 2]);
+
+        var path = d3.geo.path()
+            .projection(projection);
+
+        effectLayer.selectAll("#ukraine")
+                .attr("d", path);
+
+        mapLayer.selectAll(".point")
+            .attr("cx", function (d) {
+                return projection([d.lon, d.lat])[0];
+            })
+            .attr("cy", function (d) {
+                return projection([d.lon, d.lat])[1];
+            });
+
+        mapLayer.selectAll(".label")
+            .attr("x", function (d) {
+                return projection([d.lon, d.lat])[0] + 5 + "px" ;
+            })
+            .attr("y", function (d) {
+                return projection([d.lon, d.lat])[1] + 5 + "px" ;
+            });
+
+        colorLegend.selectAll("circle")
+            .attr('transform', 'translate('+ (margin.left / 1.5) + ','+ (height - 150) + ')');
+
+        colorLegend.selectAll("text")
+            .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 150) + ')')
+    });
+
+
+
+
+    //малюємо бокову панель
 
     var sideBarsData = data.filter(function(k) {
         return k.city === "Київ"
@@ -315,6 +381,7 @@ retrieve_my_data(function(data){
     //----- малює таблицю міст на місці карти
     function drawTable(filter) {
         d3.select('svg#map').style("display", "none");
+        d3.select('#logo').style("display", "none");
         d3.selectAll('.tableForRemove').remove();
         d3.select('#tableContainer').style("display", "grid");
 
@@ -406,27 +473,73 @@ retrieve_my_data(function(data){
         $thirdTable.find("tbody").append(tr2);
         $secondTable.find ( "tr" ).slice( splitBy ).remove();
 
-
-
     }
+
+    var colorLegendContainer = svg.selectAll('.legend').append('g')
+        .data([
+            {"color":"#134162", "text": "20-15 балів"},
+            {"color":"#2171a9", "text": "15-10"},
+            {"color":"#3695d8", "text": "10-5"},
+            {"color":"#8bc2e9", "text": "5-0"}
+        ]);
+
+    colorLegendContainer.enter().append('g').attr('class', 'legend')
+        .append('g');
+    var colorLegend = colorLegendContainer.select('g').style("width",100)
+        .attr("transform", function(d, i) { return "translate(0,"+ i * 20  +")"; });
+
+    colorLegend.append("circle")
+        .style("fill", function(d) {return d.color})
+        .attr('r', 5)
+        .attr('transform', 'translate('+ (margin.left / 1.5) + ','+ (height - 150) + ')');
+
+    colorLegend.append("text")
+        .attr("dy", ".35em")
+        .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 150) + ')')
+        .text(function(d) { return d.text;});
+
+
+
+    var sizeLegendContainer = svg.selectAll('.sizeLegend').append('g')
+        .data([
+            {"r":6, "text": "областні центри"},
+            {"r":4, "text": "інші міста"}
+
+        ]);
+
+    sizeLegendContainer.enter().append('g').attr('class', 'sizeLegend')
+        .append('g');
+    var sizeLegend = sizeLegendContainer.select('g').style("width",100)
+        .attr("transform", function(d, i) { return "translate(0,"+ i * 20  +")"; });
+
+    sizeLegend.append("circle")
+        .style("fill", "none")
+        .style("stroke", "grey")
+        .style("stroke-width", "1px")
+        .attr('r', function(d) {return d.r})
+        .attr('transform', 'translate('+ (width - margin.right) + ',' + (height - height + 20) + ')');
+
+    sizeLegend.append("text")
+        .attr("dy", ".35em")
+        .attr('transform', 'translate('+ (width - margin.right + 15) + ',' + (height - height + 20) + ')')
+        .text(function(d) { return d.text;});
+
 
 });
 
 
+
+
+
 $('#toMap').on("click", function() {
     $('svg#map').css("display", "block");
+    d3.select('#logo').style("display", "block");
     $('.tableForRemove').remove();
     $('#tableContainer').css("display", "none");
     $('#selectedIndicator').html('Оберіть місто');
 
 });
 
-function zoomed() {
-    g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-    g.select("#ukraine").style("stroke-width", 1.5 / d3.event.scale + "px");
-    g.select(".bar").style("stroke-width", 1.5 / d3.event.scale + "px");
-//        drawBarsOnMap(filter);
-}
 
 
 
