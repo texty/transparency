@@ -8,6 +8,7 @@ var div = d3.select("body").append("div")
     .style("opacity", 0);
 
 var my_data;
+var selectedIndicator;
 
 //завантаження даних в колбек
 function retrieve_my_data(cb) {
@@ -370,6 +371,7 @@ if(window.innerWidth > 825) {
         });
 
         $('#cityFilter').html(filter);
+        $('.selectedCity.desk').html("Клікайте на індикатори нижче, аби порівняти обране місто з іншими");
 
         var table = d3.select('#cityIndicators').append('table').attr("id", "sideTable");
         var thead = table.append('thead');
@@ -391,13 +393,22 @@ if(window.innerWidth > 825) {
             .append('tr');
 
         rows.append('td')
+            .style("background-color", function(d) {
+                if(d.usage === selectedIndicator) {
+                    $(this).parent().css('background-color', "yellow");
+                    return "yellow"
+                }
+                else {
+                    return false
+                }
+            })
             .attr("class", "indicatorsArray")
             .style("height", 20)
             .text(function (d) {
                 return d.usage
             })
-
             .on("click", function(p) {
+                $('td.indicatorsArray').css("background-color", "transparent");
                 $('.indicatorsArray').parent().css("background-color", "transparent");
                 $(this).parent().css("background-color", "yellow");
                 console.log(p.usage);
@@ -405,10 +416,21 @@ if(window.innerWidth > 825) {
                 if(window.innerWidth > 825) {
                     drawTable(filter)
                 }
+                selectedIndicator = p.usage;
             });
 
 
         rows.append('td')
+            .attr("class", "indicatorsArray")
+            .style("background-color", function(d) {
+                if(d.usage === selectedIndicator) {
+                    $(this).parent().css('background-color', "yellow");
+                    return "yellow"
+                }
+                else {
+                    return false
+                }
+            })
             .datum(function (d) {
                 return d
             })
@@ -418,12 +440,12 @@ if(window.innerWidth > 825) {
                 if(window.innerWidth > 825) {
                     drawTable(filter)
                 }
-
+                $('td.indicatorsArray').css("background-color", "transparent");
                 d3.selectAll('.indicatorsArray').style("color", "grey");
                 d3.selectAll('.indicatorsArray').style("font-weight", "normal");
                 $('.indicatorsArray').parent().css("background-color", "transparent");
                 $(this).parent().css("background-color", "yellow");
-                
+                selectedIndicator = p.usage;
             });
 
         rows.append('td')
@@ -502,10 +524,18 @@ if(window.innerWidth > 825) {
             .style("height", 10)
             .text(function (d) {
                 return d.city
+            })
+            .on("click", function(d) {
+                $(".citiesColumn").css('background-color', "white");
+                $(this).parent().find('.citiesColumn').css('background-color', "yellow");
+
+                var filter = d.city;
+                drawBarsSide(filter)
             });
 
 
         rows.append('td')
+            .attr("class","citiesColumn")
             .style("background-color", function(d) {
                 if(d.city === targetCity) {
                     return "yellow"
@@ -517,7 +547,13 @@ if(window.innerWidth > 825) {
             .datum(function (d) {
                 return d
             })
-            .call(drawBars("#EBEBEB"));
+            .call(drawBars("#EBEBEB"))
+            .on("click", function(d) {
+                $(".citiesColumn").css('background-color', "white");
+                $(this).parent().find('.citiesColumn').css('background-color', "yellow");
+                var filter = d.city;
+                drawBarsSide(filter)
+            });
 
 
         rows.append('td')
@@ -525,6 +561,12 @@ if(window.innerWidth > 825) {
             .style("height", 10)
             .text(function (d) {
                 return d.value
+            })
+            .on("click", function(d) {
+                $(".citiesColumn").css('background-color', "white");
+                $(this).parent().find('.citiesColumn').css('background-color', "yellow");
+                var filter = d.city;
+                drawBarsSide(filter)
             });
 
 

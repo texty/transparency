@@ -1,6 +1,9 @@
 body {
   margin: 0;
   padding: 0; }
+  @media (min-width: 826px) {
+    body {
+      overflow: hidden; } }
 
 #mygrid {
   max-width: 100vw;
@@ -16,7 +19,7 @@ body {
   @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
     #mygrid {
       height: 100vh;
-      grid-template-rows: auto 1fr auto; } }
+      grid-template-rows: auto 0 1fr auto; } }
   @media only screen and (min-device-width: 1024px) and (max-device-width: 1366px) and (orientation: portrait) and (-webkit-min-device-pixel-ratio: 1.5) {
     #mygrid {
       max-width: 100vw;
@@ -153,14 +156,14 @@ th {
     #bars {
       grid-column: 1/-1;
       grid-row: 3/4; } }
-  @media only screen and (max-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-    #bars {
-      grid-column: 1/-1;
-      grid-row: 2/3; } }
 
 #cityIndicators {
   padding: 5px 30px; }
-  @media only screen and (max-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  @media only screen and (max-width: 767px) {
+    #cityIndicators {
+      width: 60%;
+      margin: 0; } }
+  @media only screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     #cityIndicators {
       width: 60%;
       margin: 0 auto; } }
