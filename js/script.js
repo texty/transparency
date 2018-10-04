@@ -31,18 +31,42 @@ function retrieve_my_data(cb) {
 }
 
 //ширина-висота svg
-var width = window.innerWidth * 0.7,
-    height = width / 1.9;
+
+var width;
+if (window.innerWidth < 825) {
+    width = window.innerWidth;
+}
+else {
+    width = window.innerWidth * 0.7;
+}
+
+var height;
+if (window.innerWidth > 2000) {
+    height = width / 3;
+}
+else {
+    height = width / 2;
+}
 
 var color = d3.scale.linear()
     .domain([1, 20])
     .clamp(true)
     .range(['#fff', '#409A99']);
 
-var projection = d3.geo.mercator()
-    .scale([width * 2])
-    .center([31.5, 47.6])
-    .translate([width / 2, height / 2]);
+var projection;
+
+if (window.innerWidth > 2000) {
+    projection = d3.geo.mercator()
+        .scale([width * 1.5])
+        .center([31.5, 48.5])
+        .translate([width / 2, height / 2]);
+}
+else {
+    projection = d3.geo.mercator()
+        .scale([width * 2])
+        .center([31.5, 48.5])
+        .translate([width / 2, height / 2]);
+}
 
 
 var path = d3.geo.path()
@@ -67,6 +91,10 @@ var mapLayer = g.append('g')
 // Load map data
 retrieve_my_data(function(data){
 
+
+
+
+
     var subset = data.filter(function (d) {
         return d.usage === "Загальний бал"
     });
@@ -77,9 +105,9 @@ retrieve_my_data(function(data){
         .await(makeMyMap);
 
     var margin = {
-        top: 10,
+        top: 0,
         right: window.innerWidth * 0.2,
-        bottom: 15,
+        bottom: 0,
         left: window.innerWidth * 0.2
     };
 
@@ -179,33 +207,46 @@ retrieve_my_data(function(data){
         });
 
 
+    if (window.innerWidth > 825) {
+        mapLayer.selectAll("text")
+            .data(subset).enter()
+            .append("text")
+            .attr("class", "label")
+            .attr("x", function (d) {
+                return projection([d.lon, d.lat])[0] + 5 + "px";
+            })
+            .attr("y", function (d) {
+                return projection([d.lon, d.lat])[1] + 5 + "px";
+            })
+            .text(function (d) {
+                if (d.district === "yes") {
+                    return d.city
+                }
 
-    mapLayer.selectAll("text")
-        .data(subset).enter()
-        .append("text")
-        .attr("class", "label")
-        .attr("x", function (d) {
-            return projection([d.lon, d.lat])[0] + 5 + "px" ;
-        })
-        .attr("y", function (d) {
-            return projection([d.lon, d.lat])[1] + 5 + "px" ;
-        })
-        .text(function (d) {
-            if(d.district === "yes") {
-                return d.city
-            }
+            })
+            .attr("fill", "grey");
 
-        })
-        .attr("fill", "grey");
-
-
+    }
 
 
 
     //----------resize-------------------
     window.addEventListener("resize", function () {
-        var width = window.innerWidth * 0.7,
-            height = width / 1.9;
+        var width;
+        if (window.innerWidth < 825) {
+            width = window.innerWidth;
+        }
+        else {
+            width = window.innerWidth * 0.7;
+        }
+
+        var height;
+        if (window.innerWidth > 2000) {
+            height = width / 3;
+        }
+        else {
+            height = width / 2;
+        }
 
 
         var margin = {
@@ -240,23 +281,32 @@ retrieve_my_data(function(data){
                 return projection([d.lon, d.lat])[1] + 5 + "px" ;
             });
 
-        colorLegend.selectAll("circle")
-            .attr('transform', 'translate('+ (margin.left / 1.5) + ','+ (height - 150) + ')');
+        if (window.innerWidth < 825) {
+            colorLegend.selectAll("circle")
+                .attr('transform', 'translate(' + (margin.left / 1.5) + ',' + (height) + ')');
+            colorLegend.selectAll("text")
+                .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height) + ')')
+        }
+        else {
+            colorLegend.selectAll("circle")
+                .attr('transform', 'translate(' + (margin.left / 1.5) + ',' + (height - 150) + ')');
+            colorLegend.selectAll("text")
+                .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 150) + ')')
+        }
 
-        colorLegend.selectAll("text")
-            .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 150) + ')')
+
     });
 
 
 
 
     //малюємо бокову панель
-
-    var sideBarsData = data.filter(function(k) {
+if(window.innerWidth > 825) {
+    var sideBarsData = data.filter(function (k) {
         return k.city === "Київ"
     });
 
-    sideBarsData = sideBarsData.sort(function (a,b){
+    sideBarsData = sideBarsData.sort(function (a, b) {
         return d3.descending(+a.value, +b.value)
     });
 
@@ -267,19 +317,19 @@ retrieve_my_data(function(data){
     var thead = table.append('thead');
     var tbody = table.append('tbody');
 
-    thead.append('tr').selectAll('th')
-        .data(["Індикатори:", ""]).enter()
-        .append('th')
-        .style("top", "10px")
-        .text(function (d) {
-            return d;
-        });
+    // thead.append('tr').selectAll('th')
+    //     .data(["Індикатори:", ""]).enter()
+    //     .append('th')
+    //     .style("top", "10px")
+    //     .text(function (d) {
+    //         return d;
+    //     });
 
     // create a row for each object in the data
     var rowsWithIndicators = tbody.selectAll('tr')
-        .data(sideBarsData)
-        .enter()
-        .append('tr')
+            .data(sideBarsData)
+            .enter()
+            .append('tr')
         ;
 
     rowsWithIndicators.append('td')
@@ -289,21 +339,26 @@ retrieve_my_data(function(data){
             return d.usage
         })
 
-        .on("click", function(p) {
+        .on("click", function (p) {
             $('.indicatorsArray').parent().css("background-color", "transparent");
             $(this).parent().css("background-color", "yellow");
             var filter = p.usage;
-            drawTable(filter)
+            if(window.innerWidth > 825) {
+                drawTable(filter)
+            }
 
         });
 
 
-
-
+}
+    else {
+    drawBarsSide("Івано-Франківськ")
+}
 
     //------- змінює показники міста --------
 
     function drawBarsSide(filter) {
+        $('#downloadLink').css("display", "block");
         $("#sideTable").remove();
         $("#theCity").html(filter);
         var currentData = data.filter(function(k) {
@@ -314,20 +369,20 @@ retrieve_my_data(function(data){
             return d3.descending(+a.value, +b.value)
         });
 
-        $('#selectedCity').html('<span id="cityFilter">' + filter + "</span><span style='text-transform:lowercase; font-weight: 100'> (клікайте на індикатори <br> нижче, щоб порівняти міста)</span>");
+        $('#cityFilter').html(filter);
 
         var table = d3.select('#cityIndicators').append('table').attr("id", "sideTable");
         var thead = table.append('thead');
         var tbody = table.append('tbody');
 
 
-        thead.append('tr').selectAll('th')
-            .data(["Індикатор", "Оцінка"]).enter()
-            .append('th')
-            .style("top", "10px")
-            .text(function (d) {
-                return d;
-            });
+        // thead.append('tr').selectAll('th')
+        //     .data(["Індикатор", "Оцінка"]).enter()
+        //     .append('th')
+        //     .style("top", "10px")
+        //     .text(function (d) {
+        //         return d;
+        //     });
 
         // create a row for each object in the data
         var rows = tbody.selectAll('tr')
@@ -347,8 +402,9 @@ retrieve_my_data(function(data){
                 $(this).parent().css("background-color", "yellow");
                 console.log(p.usage);
                 var filter = p.usage;
-                drawTable(filter)
-
+                if(window.innerWidth > 825) {
+                    drawTable(filter)
+                }
             });
 
 
@@ -359,7 +415,10 @@ retrieve_my_data(function(data){
             .call(drawBars("white"))
             .on("click", function(p) {
                 var filter = p.usage;
-                drawTable(filter);
+                if(window.innerWidth > 825) {
+                    drawTable(filter)
+                }
+
                 d3.selectAll('.indicatorsArray').style("color", "grey");
                 d3.selectAll('.indicatorsArray').style("font-weight", "normal");
                 $('.indicatorsArray').parent().css("background-color", "transparent");
@@ -373,9 +432,23 @@ retrieve_my_data(function(data){
             .text(function (d) {
                 return d.value
             });
+    }
 
 
+    var select = d3.select('#dropDown')
+        .append('select')
+        .attr('class','select')
+        .on('change', onchange);
 
+    var options = select
+        .selectAll('option')
+        .data(data).enter()
+        .append('option')
+        .text(function (d) { return d.city; });
+
+    function onchange() {
+        var filter = d3.select('select').property('value');
+        drawBarsSide(filter)
     }
 
     //----- малює таблицю міст на місці карти
@@ -485,18 +558,24 @@ retrieve_my_data(function(data){
 
     colorLegendContainer.enter().append('g').attr('class', 'legend')
         .append('g');
-    var colorLegend = colorLegendContainer.select('g').style("width",100)
-        .attr("transform", function(d, i) { return "translate(0,"+ i * 20  +")"; });
+    var colorLegend;
 
-    colorLegend.append("circle")
-        .style("fill", function(d) {return d.color})
-        .attr('r', 5)
-        .attr('transform', 'translate('+ (margin.left / 1.5) + ','+ (height - 150) + ')');
 
-    colorLegend.append("text")
-        .attr("dy", ".35em")
-        .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 150) + ')')
-        .text(function(d) { return d.text;});
+        colorLegend = colorLegendContainer.select('g').style("width",100)
+            .attr("transform", function(d, i) { return "translate(0,"+ i * 20  +")"; });
+
+        colorLegend.append("circle")
+            .style("fill", function(d) {return d.color})
+            .attr('r', 5)
+            .attr('transform', 'translate('+ (margin.left / 1.5) + ','+ (height - 120) + ')');
+
+        colorLegend.append("text")
+            .attr("dy", ".35em")
+            .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 120) + ')')
+            .text(function(d) { return d.text;});
+
+
+
 
 
 
@@ -528,17 +607,17 @@ retrieve_my_data(function(data){
 });
 
 
-
-
-
 $('#toMap').on("click", function() {
     $('svg#map').css("display", "block");
-    d3.select('#logo').style("display", "block");
+    d3.select('#logo').style("display", "grid");
     $('.tableForRemove').remove();
     $('#tableContainer').css("display", "none");
     $('#selectedIndicator').html('Оберіть місто');
 
 });
+
+
+
 
 
 

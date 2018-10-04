@@ -19,18 +19,21 @@
     </div>
     <div id="logoContainer">
         <div id="logo">
-            <img style="width:150px;" src="img/1.png"/>
-            <img style="width:180px;" src="img/2.jpg"/>
-            <img style="width:250px;" src="img/3.jpg"/>
-            <p style="font-size:9px; width:90%; font-family: 'PT Sans Caption', sans-serif;">Ця ініціатива впроваджується в рамках проекту «Прозорість і доброчесність публічного сектору», який виконується  Програмою розвитку ООН в Україні та фінансується Міністерством закордонних справ Данії протягом 2015-2018 рр. Думки, висновки чи рекомендації належать авторам та упорядникам цього видання і не обов’язково відображають погляди Міністерства закордонних справ Данії, Програми розвитку Організації Об’єднаних Націй чи інших агенцій ООН. </p>
+            <p id="disclaimerText" >Ця ініціатива впроваджується в рамках проекту «Прозорість і доброчесність публічного сектору», який виконується  Програмою розвитку ООН в Україні та фінансується Міністерством закордонних справ Данії протягом 2015-2018 рр. Думки, висновки чи рекомендації належать авторам та упорядникам цього видання і не обов’язково відображають погляди Міністерства закордонних справ Данії, Програми розвитку Організації Об’єднаних Націй чи інших агенцій ООН. </p>
+            <img id="logoTCities" style="width:100%; padding-top:20px" src="img/1.png"/>
+            <img style="width:100%; margin:0 auto; padding-top:10px" src="img/2.jpg"/>
+            <img style="width:100%; margin-left:auto" src="img/3.jpg"/>
+
             </div>
 
 
     </div>
-
+<div id="mapContainer">
     <svg id="map"></svg>
+
+</div>
     <div id="tableContainer">
-        <img src="img/left-arrow.png" style="width:20px;  padding:0 10px 0 30px; cursor:pointer;" id="toMap"
+        <img src="img/left-arrow.png" style="width:20px;  padding:5px 10px 0 30px; cursor:pointer;" id="toMap"
              title="До карти">
         <div class="table " id="table1">
         </div>
@@ -42,9 +45,22 @@
     </div>
 
     <div id="bars">
-        <p id="selectedCity">Оберіть індикатор або місто на карті</p>
+        <div id="selectedCity">
+            <p class="selectedCity desk">Оберіть індикатор або місто на карті</p>
+            <p class="selectedCity mob">Оберіть місто</p>
+            <div id="dropDown" class="mob"></div>
+
+            <p id="cityFilter" class="desk"></p>
+
+        </div>
+
+
         <div id="cityIndicators">
         </div>
+        <a id="downloadLink" href=""><img style="width:50px; margin-bottom:30px;" src="img/xls2.png"/></a>
+
+
+
     </div>
 </div>
 
