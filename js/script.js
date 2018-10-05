@@ -381,7 +381,7 @@ if(window.innerWidth > 825) {
     //------- змінює показники міста --------
 
     function drawBarsSide(filter, linkToFile) {
-        $('#downloadLink').css("display", "block");
+        $('#excel').css("display", "grid");
         $("#sideTable").remove();
         $("#theCity").html(filter);
         var currentData = data.filter(function(k) {
@@ -506,7 +506,7 @@ if(window.innerWidth > 825) {
         d3.selectAll('.tableForRemove').remove();
         d3.select('#tableContainer').style("display", "grid");
         var tableContainerRect = document.getElementById('tableContainer').getBoundingClientRect();
-        var tableContainerHeight =  tableContainerRect.height - 35;
+        var tableContainerHeight =  tableContainerRect.height - 50;
         var tableRowHeight = tableContainerHeight / 35;
 
         $('#selectedIndicator').html(filter);
@@ -577,7 +577,7 @@ if(window.innerWidth > 825) {
             .datum(function (d) {
                 return d
             })
-            .call(drawBars("#EBEBEB"))
+            .call(drawBars("#EBEBEB", tableRowHeight))
             .on("click", function(d) {
                 $(".citiesColumn").css('background-color', "white");
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");

@@ -309,8 +309,12 @@ div.tooltip {
   display: grid;
   grid-template-columns: 70px auto; }
 
-#downloadLink {
+#excel {
   display: none;
+  width: 90%;
+  grid-template-columns: 90px auto; }
+
+#downloadLink {
   padding-left: 30px; }
   @media (max-width: 825px) {
     #downloadLink {
@@ -342,12 +346,9 @@ div.tooltip {
       grid-row: 4/5; } }
 
 #logo {
-  opacity: 0.8;
-  width: 95%;
-  margin-left: auto;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.2fr;
-  grid-template-rows: auto auto; }
+  width: 70%;
+  margin: auto;
+  opacity: 0.8; }
   @media (min-width: 2000px) {
     #logo {
       width: 60%;
@@ -360,6 +361,7 @@ div.tooltip {
       grid-template-rows: auto auto; } }
 
 #disclaimerText {
+  margin-top: -10px;
   font-size: 9px;
   text-align: justify;
   width: 100%;
