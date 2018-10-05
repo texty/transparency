@@ -184,7 +184,8 @@ retrieve_my_data(function(data){
         })
         .on("click", function(d){
             var filter = d.city;
-            drawBarsSide(filter);
+            var linkToFile = d.linkToFile;
+            drawBarsSide(filter, linkToFile)
         })
         .on("mouseover", function(d){
             if(d.district === "no"){
@@ -232,7 +233,7 @@ retrieve_my_data(function(data){
 
 
     //----------resize-------------------
-    window.addEventListener("resize", function () {
+    window.addEventListener("resize orientationchange", function () {
         var width;
         if (window.innerWidth < 825) {
             width = window.innerWidth;
@@ -282,18 +283,39 @@ retrieve_my_data(function(data){
                 return projection([d.lon, d.lat])[1] + 5 + "px" ;
             });
 
+        var effectLayerRect = $('svg#map > g')[0].getBoundingClientRect();
+        var colorLegendMarginLeft =  (width - effectLayerRect.width) / 2;
+
         if (window.innerWidth < 825) {
             colorLegend.selectAll("circle")
                 .attr('transform', 'translate(' + (margin.left / 1.5) + ',' + (height) + ')');
             colorLegend.selectAll("text")
-                .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height) + ')')
+                .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height) + ')');
+            sizeLegend.selectAll("circle")
+                .attr('transform', 'translate('+ colorLegendMarginLeft + ',' + (height - height + 20) + ')');
+            sizeLegend.selectAll("text")
+                .attr('transform', 'translate('+ (colorLegendMarginLeft + 15) + ',' + (height - height + 20) + ')');
+
         }
         else {
             colorLegend.selectAll("circle")
-                .attr('transform', 'translate(' + (margin.left / 1.5) + ',' + (height - 150) + ')');
+                .attr('transform', 'translate(' + (margin.left / 1.5) + ',' + (height - (height/3.5)) + ')');
             colorLegend.selectAll("text")
-                .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 150) + ')')
+                .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - (height/3.5)) + ')');
+            sizeLegend.selectAll("circle")
+                .attr('transform', 'translate('+ (width - margin.right) + ',' + (height - height + 20) + ')');
+            sizeLegend.selectAll("text")
+                .attr('transform', 'translate('+ (width - margin.right + 15) + ',' + (height - height + 20) + ')');
+
         }
+
+
+
+        var tableContainerRect = document.getElementById('tableContainer').getBoundingClientRect();
+        var tableContainerHeight =  tableContainerRect.height - 35;
+        var tableRowHeight = tableContainerHeight / 35;
+
+        $(".citiesColumn").attr("height", tableRowHeight);
 
 
     });
@@ -353,12 +375,12 @@ if(window.innerWidth > 825) {
 
 }
     else {
-    drawBarsSide("Івано-Франківськ")
+    drawBarsSide("Івано-Франківськ", "xls/Івано_Франківськ.xlsx")
 }
 
     //------- змінює показники міста --------
 
-    function drawBarsSide(filter) {
+    function drawBarsSide(filter, linkToFile) {
         $('#downloadLink').css("display", "block");
         $("#sideTable").remove();
         $("#theCity").html(filter);
@@ -371,6 +393,7 @@ if(window.innerWidth > 825) {
         });
 
         $('#cityFilter').html(filter);
+        $('a#downloadLink').attr("href", linkToFile);
         $('.selectedCity.desk').html("Клікайте на індикатори нижче, аби порівняти обране місто з іншими");
 
         var table = d3.select('#cityIndicators').append('table').attr("id", "sideTable");
@@ -466,11 +489,14 @@ if(window.innerWidth > 825) {
         .selectAll('option')
         .data(data).enter()
         .append('option')
+        .attr("value", function (d) { return d.linkToFile; })
         .text(function (d) { return d.city; });
 
     function onchange() {
-        var filter = d3.select('select').property('value');
-        drawBarsSide(filter)
+        var selected = $(this).find('option:selected');
+        var filter = selected.text();
+        var linkToFile = selected.val();
+        drawBarsSide(filter, linkToFile)
     }
 
     //----- малює таблицю міст на місці карти
@@ -479,6 +505,9 @@ if(window.innerWidth > 825) {
         d3.select('#logo').style("display", "none");
         d3.selectAll('.tableForRemove').remove();
         d3.select('#tableContainer').style("display", "grid");
+        var tableContainerRect = document.getElementById('tableContainer').getBoundingClientRect();
+        var tableContainerHeight =  tableContainerRect.height - 35;
+        var tableRowHeight = tableContainerHeight / 35;
 
         $('#selectedIndicator').html(filter);
         var targetCity = $('#cityFilter').html();
@@ -521,7 +550,7 @@ if(window.innerWidth > 825) {
                 }
             })
             .attr("class","citiesColumn")
-            .style("height", 10)
+            .style("height", tableRowHeight)
             .text(function (d) {
                 return d.city
             })
@@ -530,7 +559,8 @@ if(window.innerWidth > 825) {
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
 
                 var filter = d.city;
-                drawBarsSide(filter)
+                var linkToFile = d.linkToFile;
+                drawBarsSide(filter, linkToFile)
             });
 
 
@@ -552,13 +582,14 @@ if(window.innerWidth > 825) {
                 $(".citiesColumn").css('background-color', "white");
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
                 var filter = d.city;
-                drawBarsSide(filter)
+                var linkToFile = d.linkToFile;
+                drawBarsSide(filter, linkToFile)
             });
 
 
         rows.append('td')
             .attr("class", "citiesColumn")
-            .style("height", 10)
+            .style("height", tableRowHeight)
             .text(function (d) {
                 return d.value
             })
@@ -566,8 +597,11 @@ if(window.innerWidth > 825) {
                 $(".citiesColumn").css('background-color', "white");
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
                 var filter = d.city;
-                drawBarsSide(filter)
+                var linkToFile = d.linkToFile;
+                drawBarsSide(filter, linkToFile)
             });
+
+
 
 
 
@@ -587,8 +621,12 @@ if(window.innerWidth > 825) {
         var $thirdTable = $("#table3").append("<table id='thirdTable' class='tableForRemove'><tbody></tbody></table>");
         $thirdTable.find("tbody").append(tr2);
         $secondTable.find ( "tr" ).slice( splitBy ).remove();
-
     }
+
+
+    var effectLayerRect = $('svg#map > g')[0].getBoundingClientRect();
+    var colorLegendMarginLeft =  (width - effectLayerRect.width) / 2;
+
 
     var colorLegendContainer = svg.selectAll('.legend').append('g')
         .data([
@@ -609,15 +647,12 @@ if(window.innerWidth > 825) {
         colorLegend.append("circle")
             .style("fill", function(d) {return d.color})
             .attr('r', 5)
-            .attr('transform', 'translate('+ (margin.left / 1.5) + ','+ (height - 120) + ')');
+            .attr('transform', 'translate('+ colorLegendMarginLeft + ','+ (height - (height/3)) + ')');
 
         colorLegend.append("text")
             .attr("dy", ".35em")
-            .attr('transform', 'translate('+ ((margin.left / 1.5) + 20) + ','+ (height - 120) + ')')
+            .attr('transform', 'translate('+ (colorLegendMarginLeft + 20) + ','+ (height - (height/3)) + ')')
             .text(function(d) { return d.text;});
-
-
-
 
 
 
