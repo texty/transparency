@@ -659,7 +659,7 @@ if(window.innerWidth > 825) {
     var sizeLegendContainer = svg.selectAll('.sizeLegend').append('g')
         .data([
             {"r":6, "text": "областні центри"},
-            {"r":4, "text": "інші міста"}
+            {"r":4, "text": "інші міста (наведіть мишею)"}
 
         ]);
 
