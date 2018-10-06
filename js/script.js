@@ -215,10 +215,10 @@ retrieve_my_data(function(data){
             .append("text")
             .attr("class", "label")
             .attr("x", function (d) {
-                return projection([d.lon, d.lat])[0] + 5 + "px";
+                return projection([d.lon, d.lat])[0] + 7 + "px";
             })
             .attr("y", function (d) {
-                return projection([d.lon, d.lat])[1] + 5 + "px";
+                return projection([d.lon, d.lat])[1] + 3 + "px";
             })
             .text(function (d) {
                 if (d.district === "yes") {
@@ -233,7 +233,7 @@ retrieve_my_data(function(data){
 
 
     //----------resize-------------------
-    window.addEventListener("resize orientationchange", function () {
+    window.addEventListener("resize", function () {
         var width;
         if (window.innerWidth < 825) {
             width = window.innerWidth;
@@ -642,7 +642,7 @@ if(window.innerWidth > 825) {
 
 
         colorLegend = colorLegendContainer.select('g').style("width",100)
-            .attr("transform", function(d, i) { return "translate(0,"+ i * 20  +")"; });
+            .attr("transform", function(d, i) { return "translate(0,"+ i * 18  +")"; });
 
         colorLegend.append("circle")
             .style("fill", function(d) {return d.color})
@@ -652,6 +652,7 @@ if(window.innerWidth > 825) {
         colorLegend.append("text")
             .attr("dy", ".35em")
             .attr('transform', 'translate('+ (colorLegendMarginLeft + 20) + ','+ (height - (height/3)) + ')')
+            .attr("font-size", "13px")
             .text(function(d) { return d.text;});
 
 
@@ -659,25 +660,27 @@ if(window.innerWidth > 825) {
     var sizeLegendContainer = svg.selectAll('.sizeLegend').append('g')
         .data([
             {"r":6, "text": "областні центри"},
-            {"r":4, "text": "інші міста (наведіть мишею)"}
+            {"r":4, "text": "інші міста (наведіть мишею на"},
+            {"r":0, "text": "точки, щоб побачити назву)"}
 
         ]);
 
     sizeLegendContainer.enter().append('g').attr('class', 'sizeLegend')
         .append('g');
     var sizeLegend = sizeLegendContainer.select('g').style("width",100)
-        .attr("transform", function(d, i) { return "translate(0,"+ i * 20  +")"; });
+        .attr("transform", function(d, i) { return "translate(0,"+ i * 18  +")"; });
 
     sizeLegend.append("circle")
         .style("fill", "none")
         .style("stroke", "grey")
         .style("stroke-width", "1px")
         .attr('r', function(d) {return d.r})
-        .attr('transform', 'translate('+ (width - margin.right) + ',' + (height - height + 20) + ')');
+        .attr('transform', 'translate('+ (width - margin.right ) + ',' + (height - height + 20) + ')');
 
     sizeLegend.append("text")
         .attr("dy", ".35em")
-        .attr('transform', 'translate('+ (width - margin.right + 15) + ',' + (height - height + 20) + ')')
+        .attr('transform', 'translate('+ (width - margin.right  + 15) + ',' + (height - height + 20) + ')')
+        .attr("font-size", "12px")
         .text(function(d) { return d.text;});
 
 
