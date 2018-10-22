@@ -27,7 +27,7 @@ function retrieve_my_data(cb) {
 
         my_data = data;
         if (cb) return cb(data);
-        return;
+        
     })
 }
 
@@ -91,9 +91,6 @@ var mapLayer = g.append('g')
 
 // Load map data
 retrieve_my_data(function(data){
-
-
-
 
 
     var subset = data.filter(function (d) {
@@ -162,7 +159,7 @@ retrieve_my_data(function(data){
                 return "5px"
             }
             else {
-                return "3px"
+                return "3.8px"
             }
 
         })
@@ -185,18 +182,27 @@ retrieve_my_data(function(data){
         .on("click", function(d){
             var filter = d.city;
             var linkToFile = d.linkToFile;
-            drawBarsSide(filter, linkToFile)
+            drawBarsSide(filter, linkToFile);
+            $("#hint_0").css("display", "block");
+
         })
         .on("mouseover", function(d){
             if(d.district === "no"){
                 div.transition()
                     .duration(200)
                     .style("opacity", .9);
-                div.html(d.city)
+                div.html(d.city +" - <b>"+ d.share + "</b>")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 18) + "px");
-                // $('.label').css("display", "none")
+            } else {
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html("<b>"+ d.share + "</b>")
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 18) + "px");
             }
+
 
 
 
@@ -369,6 +375,8 @@ if(window.innerWidth > 825) {
             if(window.innerWidth > 825) {
                 drawTable(filter)
             }
+            $("#hint_0").css("display", "block");
+
 
         });
 
@@ -469,6 +477,7 @@ if(window.innerWidth > 825) {
                 $('.indicatorsArray').parent().css("background-color", "transparent");
                 $(this).parent().css("background-color", "yellow");
                 selectedIndicator = p.usage;
+                $("#hint_0").css("display", "block")
             });
 
         rows.append('td')
@@ -560,7 +569,8 @@ if(window.innerWidth > 825) {
 
                 var filter = d.city;
                 var linkToFile = d.linkToFile;
-                drawBarsSide(filter, linkToFile)
+                drawBarsSide(filter, linkToFile);
+                $("#hint_0").css("display", "block");
             });
 
 
@@ -583,7 +593,9 @@ if(window.innerWidth > 825) {
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
                 var filter = d.city;
                 var linkToFile = d.linkToFile;
-                drawBarsSide(filter, linkToFile)
+                drawBarsSide(filter, linkToFile);
+                $("#hint_0").css("display", "block");
+
             });
 
 
@@ -598,7 +610,9 @@ if(window.innerWidth > 825) {
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
                 var filter = d.city;
                 var linkToFile = d.linkToFile;
-                drawBarsSide(filter, linkToFile)
+                drawBarsSide(filter, linkToFile);
+                $("#hint_0").css("display", "block");
+
             });
 
 
@@ -659,7 +673,7 @@ if(window.innerWidth > 825) {
 
     var sizeLegendContainer = svg.selectAll('.sizeLegend').append('g')
         .data([
-            {"r":6, "text": "областні центри"},
+            {"r":6, "text": "обласні центри"},
             {"r":4, "text": "інші міста (наведіть мишею на"},
             {"r":0, "text": "точки, щоб побачити назву)"}
 
