@@ -191,14 +191,14 @@ retrieve_my_data(function(data){
                 div.transition()
                     .duration(200)
                     .style("opacity", .9);
-                div.html(d.city +" - <b>"+ d.share + "</b>")
+                div.html(d.city +" - <b>"+ d.value + "</b>")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 18) + "px");
             } else {
                 div.transition()
                     .duration(200)
                     .style("opacity", .9);
-                div.html(" <b>"+ d.share + "</b>")
+                div.html(" <b>"+ d.value + "</b>")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 18) + "px");
             }
