@@ -180,10 +180,19 @@ retrieve_my_data(function(data){
 
         })
         .on("click", function(d){
+            $("#hint_0").css("display", "none");
             var filter = d.city;
             var linkToFile = d.linkToFile;
             drawBarsSide(filter, linkToFile);
-            $("#hint_0").css("display", "block");
+            if(filter === "Дунаївці" ||
+                filter === "Новомосковськ" ||
+                filter === "Кривий Ріг" ||
+                filter === "Покровськ" ||
+                filter === "Прилуки" ||
+                filter === "Умань" ||
+                filter === "Черкаси" ) {
+                $("#hint_0").css("display", "block");
+            }
 
         })
         .on("mouseover", function(d){
@@ -375,7 +384,6 @@ if(window.innerWidth > 825) {
             if(window.innerWidth > 825) {
                 drawTable(filter)
             }
-            $("#hint_0").css("display", "block");
 
 
         });
@@ -477,7 +485,6 @@ if(window.innerWidth > 825) {
                 $('.indicatorsArray').parent().css("background-color", "transparent");
                 $(this).parent().css("background-color", "yellow");
                 selectedIndicator = p.usage;
-                $("#hint_0").css("display", "block")
             });
 
         rows.append('td')
@@ -564,13 +571,22 @@ if(window.innerWidth > 825) {
                 return d.city
             })
             .on("click", function(d) {
+                $("#hint_0").css("display", "none");
                 $(".citiesColumn").css('background-color', "white");
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
 
                 var filter = d.city;
                 var linkToFile = d.linkToFile;
                 drawBarsSide(filter, linkToFile);
-                $("#hint_0").css("display", "block");
+                if(filter === "Дунаївці" ||
+                    filter === "Новомосковськ" ||
+                    filter === "Кривий Ріг" ||
+                    filter === "Покровськ" ||
+                    filter === "Прилуки" ||
+                    filter === "Умань" ||
+                    filter === "Черкаси" ) {
+                    $("#hint_0").css("display", "block");
+                }
             });
 
 
@@ -589,12 +605,21 @@ if(window.innerWidth > 825) {
             })
             .call(drawBars("#EBEBEB", tableRowHeight))
             .on("click", function(d) {
+                $("#hint_0").css("display", "none");
                 $(".citiesColumn").css('background-color', "white");
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
                 var filter = d.city;
                 var linkToFile = d.linkToFile;
                 drawBarsSide(filter, linkToFile);
-                $("#hint_0").css("display", "block");
+                if(filter === "Дунаївці" ||
+                    filter === "Новомосковськ" ||
+                    filter === "Кривий Ріг" ||
+                    filter === "Покровськ" ||
+                    filter === "Прилуки" ||
+                    filter === "Умань" ||
+                    filter === "Черкаси" ) {
+                    $("#hint_0").css("display", "block");
+                }
 
             });
 
@@ -606,12 +631,21 @@ if(window.innerWidth > 825) {
                 return d.value
             })
             .on("click", function(d) {
+                $("#hint_0").css("display", "none");
                 $(".citiesColumn").css('background-color', "white");
                 $(this).parent().find('.citiesColumn').css('background-color', "yellow");
                 var filter = d.city;
                 var linkToFile = d.linkToFile;
                 drawBarsSide(filter, linkToFile);
-                $("#hint_0").css("display", "block");
+                if(filter === "Дунаївці" ||
+                    filter === "Новомосковськ" ||
+                    filter === "Кривий Ріг" ||
+                    filter === "Покровськ" ||
+                    filter === "Прилуки" ||
+                    filter === "Умань" ||
+                    filter === "Черкаси" ) {
+                    $("#hint_0").css("display", "block");
+                }
 
             });
 
