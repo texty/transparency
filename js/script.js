@@ -195,6 +195,22 @@ retrieve_my_data(function(data){
             }
 
         })
+        .on("touchstart", function(d){
+            $("#hint_0").css("display", "none");
+            var filter = d.city;
+            var linkToFile = d.linkToFile;
+            drawBarsSide(filter, linkToFile);
+            if(filter === "Дунаївці" ||
+                filter === "Новомосковськ" ||
+                filter === "Кривий Ріг" ||
+                filter === "Покровськ" ||
+                filter === "Прилуки" ||
+                filter === "Умань" ||
+                filter === "Черкаси" ) {
+                $("#hint_0").css("display", "block");
+            }
+
+        })
         .on("mouseover", function(d){
             if(d.district === "no"){
                 div.transition()
@@ -649,7 +665,7 @@ if(window.innerWidth > 825) {
 
             });
 
-
+        // touchstart
 
 
 
